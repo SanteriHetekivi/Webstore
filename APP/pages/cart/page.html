@@ -1,0 +1,51 @@
+<div id="cart" class="container-fluid">
+  <div class="page-header"><h1>{{ Title }}</h1></div>
+  <table>
+    <tbody>
+      <tr ng-repeat="q in extraQuestions">
+        <td>{{ q.question }}:</td>
+        <td><input ng-model="cart.order[q.column]" type="text" ng-change="clearError(q.column);" id="{{ q.column }}" value="{{ cart.order[q.column] }}"/></td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="table table-hover table-bordered">
+    <thead>
+      <tr>
+        <th>Kuva</th>
+        <th>Tuote</th>
+        <th>Hinta</th>
+        <th>Toiminnot</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="product in cart.products">
+        <td><img class="productImage" src="{{ product.image }}"></td>
+        <td>{{ product.title }}</td>
+        <td>{{ format("euro",product.price) }}</td>
+        <td class="action-column">
+          <button type="button" ng-click="REMOVE(product.id)">POISTA</button>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Toimitus:</td>
+        <td>
+          <select ng-model="cart.order.shipping_id">
+            <option ng-selected="id == cart.order.shipping_id" ng-repeat="(id, shi) in cart.shipping" value="{{ id }}">{{ shi.title }} ({{ format('euro',shi.price) }})</option>
+          </select>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Hinta:</td>
+        <td>{{ format('euro',cart.order.price) }} + {{ format("euro", cart.shipping[cart.order.shipping_id].price) }} =
+          {{format("euro", format("float", cart.shipping[cart.order.shipping_id].price)+format("float", cart.order.price))}}</td>
+        <td class="action-column">
+          <button type="button" ng-click="PAY()">MAKSA</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

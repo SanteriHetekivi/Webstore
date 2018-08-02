@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html ng-app="App">
+    <head>
+      <meta charset="utf-8">
+      <title>Harjoitustyö Santeri Hetekivi (1202466)</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- STYLE SHEETS -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+      <link rel="stylesheet" href="style.css">
+      <!-- Page style sheets -->
+      <link rel="stylesheet" href="pages/store/style.css">
+      <link rel="stylesheet" href="pages/cart/style.css">
+      <link rel="stylesheet" href="pages/user/style.css">
+      <link rel="stylesheet" href="pages/system/products/style.css">
+      <link rel="stylesheet" href="pages/system/productTypes/style.css">
+      <link rel="stylesheet" href="pages/system/shipping/style.css">
+      <link rel="stylesheet" href="pages/system/orders/style.css">
+      <link rel="stylesheet" href="pages/system/users/style.css">
+      <!-- Non local JS libs -->
+      <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+      <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.js"></script>
+      <script src="//angular-ui.github.io/ui-router/release/angular-ui-router.js"></script>
+      <script src="//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha1.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-rc.0/angular-sanitize.js"></script>
+      <!-- Local JS libs -->
+      <script src="libs/dirPagination/dirPagination.js"></script>
+      <script src="libs/ngStorage/ngStorage.min.js"></script>
+      <!-- App -->
+      <script src="App.js"></script>
+      <!-- Global functions and constants -->
+      <script src="libs/functions.js"></script>
+      <script src="libs/constants.js"></script>
+      <!-- Classes -->
+      <script src="libs/classes/column.class.js"></script>
+      <script src="libs/classes/columns.class.js"></script>
+      <!-- Services -->
+      <script src="libs/services/Session.js"></script>
+      <script src="libs/services/EventServices.js"></script>
+
+      <!-- Directives -->
+      <script src="libs/directives/formAutofillFix.js"></script>
+      <!-- -->
+      <script src="Run.js"></script>
+      <!-- Factories -->
+      <script src="libs/factories/AuthService.js"></script>
+      <script src="libs/factories/AuthInterceptor.js"></script>
+      <script src="libs/factories/AuthResolver.js"></script>
+      <script src="libs/factories/REST.js"></script>
+
+      <!-- Controller -->
+	    <script src="index.js"></script>
+      <!-- Page Controllers -->
+      <script src="pages/store/controller.js"></script>
+      <script src="pages/cart/controller.js"></script>
+      <script src="pages/user/controller.js"></script>
+      <script src="pages/system/products/controller.js"></script>
+      <script src="pages/system/productTypes/controller.js"></script>
+      <script src="pages/system/shipping/controller.js"></script>
+      <script src="pages/system/orders/controller.js"></script>
+      <script src="pages/system/users/controller.js"></script>
+    </head>
+  <body ng-controller="indexController">
+    <div class="navbar navbar-default navbar-inverse navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
+                    <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand"></a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+                <ul class="nav navbar-left navbar-nav">
+                  <li ng-repeat="nav in Nav">
+                    <a ng-if="!hasSubMenu(nav)" ui-sref="{{ nav.link }}">{{ nav.title }}</a>
+                    <a ng-if="hasSubMenu(nav)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ nav.title }}</a>
+                      <ul ng-if="hasSubMenu(nav)" class="dropdown-menu" >
+                        <li ng-if="hasSubMenu(nav)" ng-repeat="Item in nav.subMenu"><a ui-sref="{{ Item.link }}">{{ Item.title }}</a></li>
+                      </ul>
+                  </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                  <li>
+                    <a ui-sref="{{ RightNav.Cart.link }}">{{ RightNav.Cart.title }} ({{ shoppingCartCounter }})</a>
+                  </li>
+                  <li>
+                    <a ng-click="RightNav.Login.click()">{{ RightNav.Login.title }}</a>
+                  </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div>
+      <div ui-view></div>
+    </div>
+    <script type="text/ng-template" id="dataTable">
+      <div class="search">
+        <input ng-model="searchText" placeholder="Hae">
+      </div>
+      <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+              <th ng-repeat="(name, column) in Columns.columns"  ng-click="predicate='{{column.name}}'; reverse=!reverse">{{ name }}</th>
+              <th>Toiminnot</th>
+            </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="Columns.showNEW" ng-include="TEMPLATE({})"></tr>
+          <tr dir-paginate="object in data.data | filter: searchText | orderBy:predicate:reverse | itemsPerPage: pageSize" current-page="currentPage" ng-include="TEMPLATE(object)">
+          </tr>
+        </tbody>
+      </table>
+      <p><dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="libs/dirPagination/dirPagination.tpl.html"></dir-pagination-controls></p>
+    </script>
+    <!--<script type="text/ng-template" id="display">
+      <td ng-repeat="(name, column) in Columns.columns" ng-click="column.click(object);" >
+        <div ng-bind-html="Columns.VAL(name, object);"</div>
+      </td>
+      <td class="action-column">
+          <button type="button" ng-click="EDIT(object)">MUOKKAA</button>
+          <button type="button" ng-click="REMOVE(object)">POISTA</button>
+          <button ng-repeat="button in extraButtons" ng-if="button.test.func(object[button.test.val]);" ng-click="button.click(object)">{{button.title}}</button>
+      </td>
+    </script>-->
+    <script type="text/ng-template" id="edit">
+      <td ng-repeat="(name, column) in Columns.columns">
+        <input ng-if="column.isInput('selected')" type="{{ column.iType }}" id="{{ column.id('selected') }}"
+          ng-class="{'ERROR': errorClasses['selected'+column.name]}"
+          ng-change="errorClasses['selected'+column.name] = false"
+          ng-model="data.selected[column.name]"
+          ng-change="clearErrorClass(column.id('selected'))"/>
+        <select ng-if="column.isSelect('selected')" ng-model="data.selected[column.name]"
+          ng-class="errorClasses['selected'+column.name]" ng-change="clearErrorClass(column.id('selected'))">
+          <option ng-selected="id == object[column.name]" ng-repeat="(id, title) in column.data" value="{{ id }}">{{ title }}</option>
+        </select>
+        <div ng-if="column.isRead('selected')" ng-class="errorClasses['selected'+column.name]" > {{ Columns.VAL(name, object) }}</div>
+      </td>
+      <td>
+        <button ng-click="SAVE(data.selected, 'selected')">Tallenna</button>
+        <button ng-click="RESET()">Peruuta</button>
+      </td>
+    </script>
+    <script type="text/ng-template" id="new">
+      <td ng-repeat="(name, column) in Columns.columns">
+        <input ng-if="column.isInput('new')" type="{{ column.iType }}" id="{{ column.id('new') }}"
+          ng-class="{'ERROR': errorClasses['new'+column.name]}"
+          ng-change="errorClasses['new'+column.name] = false"
+          ng-model="data.new[column.name]"/>
+        <select ng-if="column.isSelect('new')" ng-model="data.new[column.name]"
+          ng-change="clearErrorClass(column.id('new'))" ng-class="errorClasses['new'+column.name]">
+          <option ng-selected="id == object[column.name]" ng-repeat="(id, title) in column.data" value="{{ id }}">{{ title }}</option>
+        </select>
+        <div ng-if="column.isRead('new')" ng-class="errorClasses['new'+column.name]" > {{ Columns.VAL(name, object) }}</div>
+      </td>
+      <td>
+          <button ng-click="SAVE(data.new, 'new')">Tallenna</button>
+      </td>
+    </script>
+    <div id="LOGIN_MODAL" class="modal fade" role="dialog" >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Kirjaudu</h4>
+          </div>
+          <div class="modal-body">
+            <iframe src="sink.html" name="sink" style="display:none"></iframe>
+            <form name="loginForm"
+                  action="sink.html" target="sink" method="post"
+                  ng-submit="LOGIN(credentials)"
+                  novalidate form-autofill-fix>
+              <table>
+                <tr>
+                  <td><label for="login.username">Käyttäjänimi:</label></td>
+                  <td><input ng-style="inputField" type="text" id="login.username"
+                    ng-class="{'ERROR': errorClasses['login.username']}"
+                    ng-change="errorClasses['login.username'] = false"
+                    ng-model="credentials.username"></td>
+                </tr>
+                <tr>
+                  <td><label for="login.password">Salasana:</label></td>
+                  <td><input type="password" id="login.password"
+                    ng-class="{'ERROR': errorClasses['login.password']}"
+                    ng-change="errorClasses['login.password'] = false"
+                    ng-model="credentials.password"></td>
+                </tr>
+                <tr><td colspan="2"><button style="display: block; width: 100%;" type="submit">Kirjaudu</button></td></tr>
+              </table>
+            </form>
+            </br></br></br>
+            <form name="signUpForm" ng-submit="SIGNUP(user)">
+              <table>
+                <tr><th colspan="2">Luo tunnus:</th></tr>
+                <tr ng-repeat="field in SignUpFields">
+                  <td><label for="{{ field.id }}">{{ field.title }}:</label></td>
+                  <td><input ng-style="inputField" type="text" id="{{ field.id }}"
+                    ng-class="{'ERROR': errorClasses[field.id]}"
+                    ng-change="errorClasses[field.id] = false"
+                    ng-model="user[field.id]"></td>
+                </tr>
+                <tr><td colspan="2"><button style="display: block; width: 100%;" type="submit">Luo</button></td></tr>
+              </table>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>

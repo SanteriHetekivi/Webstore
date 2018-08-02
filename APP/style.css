@@ -1,0 +1,19 @@
+/*
+  RED: #FF0000;
+*/
+
+.productImage
+{
+  width: 100px;
+  height: 100px;
+}
+
+.ERROR
+{
+  background-color : #FF0000;
+}
+
+.dataTableContainer
+{
+  overflow: auto;
+}

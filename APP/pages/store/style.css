@@ -1,0 +1,10 @@
+#store #panelLeft
+{
+  overflow: auto;
+  //background:red;
+}
+#store #panelRight
+{
+  overflow: auto;
+  //background:green;
+}

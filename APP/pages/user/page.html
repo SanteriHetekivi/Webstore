@@ -1,0 +1,59 @@
+<div controller="userController" id="user" class="container-fluid">
+  <div class="page-header"><h1>{{ Title }}</h1></div>
+  <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th>Tilattu</th>
+          <th>Toimitus</th>
+          <th>Hinta</th>
+          <th>Toiminnot</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="object in orders">
+          <td>{{ format("dateTime", object.created) }}</td>
+          <td>{{ checkShipped(object) }}</td>
+          <td>{{ format("euro",object.price) }}</td>
+          <td class="action-column">
+              <button type="button" ng-click="SHOW(object)">TUOTTEET</button>
+          </td>
+        </tr>
+      </tbody>
+  </table>
+  <script type="text/ng-template" id="display">
+
+  </script>
+  <button type="button"ng-click="LOGOUT()">LOGOUT</button>
+  <div id="orderProducts" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Tuotteet</h4>
+        </div>
+        <div class="modal-body">
+          <table class="table table-hover table-bordered">
+            <thead>
+              <tr>
+                <th>Kuva</th>
+                <th>Tuote</th>
+                <th>Hinta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="product in show.products">
+                <td><img class="productImage" src="product.image"></td>
+                <td>{{ product.title }}</td>
+                <td>{{ format("euro",product.price) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<div id="store" class="container-fluid">
+  <div class="page-header"><h1>{{ Title }}</h1></div>
+  <div id="panelRight" class="col-xs-12 col-md-3">
+    <ul class="nav">
+      <li ng-repeat="(id, name) in types" >
+        <a ng-click="changeType(id)">{{ name }}</a>
+      </li>
+    </ul>
+  </div>
+  <div id="panelLeft" class="col-xs-12 col-md-9">
+    <div class="search">
+      <input ng-model="searchText" placeholder="Hae">
+    </div>
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th ng-click="predicate='image'; reverse=!reverse">Kuva</th>
+          <th ng-click="predicate='title'; reverse=!reverse">Tuote</th>
+          <th ng-click="predicate='price'; reverse=!reverse">Hinta</th>
+          <th>Toiminnot</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr dir-paginate="x in products | filter: searchText | orderBy:predicate:reverse | itemsPerPage: pageSize" current-page="currentPage">
+          <td><img class="productImage" ng-src="{{ x.image }}"></td>
+          <td>{{ x.title }}</td>
+          <td>{{ format("euro",x.price) }}</td>
+          <td class="action-column">
+            <button type="button" ng-click="addToCart(x.id)">OSTA</button>
+            <!--<button type="button" data-toggle="modal" data-target="#productInfo" ng-click="showProductInfo($index, e)">Lisätiedot</button>-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p><dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="libs/dirPagination/dirPagination.tpl.html"></dir-pagination-controls></p>
+  </div>
+</div>
